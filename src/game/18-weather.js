@@ -12,7 +12,7 @@ const WX = { rain: null, snow: null, sunset: false };
   WX.snow.frustumCulled = false; WX.snow.visible = false; scene.add(WX.snow);
 }
 function updateWeather(dt, t) {
-  const cp = camera.position;
+  const cp = CAMW;
   if (WX.rain.visible) {
     const n = Math.floor(2200 * Q.particles), b = WX.rain.userData.base, p = WX.rain.geometry.attributes.position.array;
     for (let i = 0; i < 2200; i++) {
@@ -20,12 +20,12 @@ function updateWeather(dt, t) {
       const k = i * 6; if (i >= n) { p[k] = p[k + 3] = 0; p[k + 1] = p[k + 4] = -50; p[k + 2] = p[k + 5] = 0; continue; }
       p[k] = b[i * 3]; p[k + 1] = b[i * 3 + 1]; p[k + 2] = b[i * 3 + 2]; p[k + 3] = b[i * 3] + 0.03; p[k + 4] = b[i * 3 + 1] + 0.42; p[k + 5] = b[i * 3 + 2] + 0.08 + P.v * 0.012;
     }
-    WX.rain.geometry.attributes.position.needsUpdate = true; WX.rain.position.set(cp.x, 0, cp.z); WX.rain.rotation.y = camera.rotation.y;
+    WX.rain.geometry.attributes.position.needsUpdate = true; WX.rain.position.set(cp.x, 0, cp.z); WX.rain.rotation.y = carRig.rotation.y;
   }
   if (WX.snow.visible) {
     const p = WX.snow.geometry.attributes.position.array;
     for (let i = 0; i < 2600; i++) { p[i * 3 + 1] -= 1.3 * dt; p[i * 3] += Math.sin(t * 0.8 + i) * 0.4 * dt; p[i * 3 + 2] += P.v * dt * 0.35; if (p[i * 3 + 1] < -1.5 || p[i * 3 + 2] > 10) { p[i * 3 + 1] = rand(8, 14); p[i * 3] = rand(-22, 22); p[i * 3 + 2] = rand(-40, 0); } }
-    WX.snow.geometry.attributes.position.needsUpdate = true; WX.snow.position.set(cp.x, 0, cp.z); WX.snow.rotation.y = camera.rotation.y;
+    WX.snow.geometry.attributes.position.needsUpdate = true; WX.snow.position.set(cp.x, 0, cp.z); WX.snow.rotation.y = carRig.rotation.y;
   }
   if (CK.wipers[0].visible) {
     const per = 1.5, ph = (t % per) / per, a = Math.sin(ph * Math.PI) * 1.5;
@@ -36,7 +36,7 @@ function updateWeather(dt, t) {
   const gl = $('glare');
   if (WX.sunset && S && P.mode !== 'replay') {
     const v = new THREE.Vector3().copy(SUN_DIR).multiplyScalar(500).add(cp).project(camera);
-    const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).dot(SUN_DIR);
+    const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(CAMQ).dot(SUN_DIR);
     const op = v.z < 1 ? Math.max(0, (fwd - 0.6) / 0.4) : 0;
     gl.style.opacity = (op * 0.95).toFixed(2); gl.style.setProperty('--gx', ((v.x * 0.5 + 0.5) * 100).toFixed(1) + '%'); gl.style.setProperty('--gy', ((1 - (v.y * 0.5 + 0.5)) * 100).toFixed(1) + '%');
   } else gl.style.opacity = 0;

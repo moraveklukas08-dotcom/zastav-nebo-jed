@@ -11,8 +11,8 @@ provozu a rychlé rozhodování na křižovatkách** (ne na reflexy typu srnka).
 
 - [x] Fáze 0: repozitář, Vite, rozdělení kódu, automatické testy
 - [ ] Fáze 1: opravy
-  - [ ] rozhlížení otáčí **hlavu** v kabině, ne celé auto
-  - [ ] tlačítko **Menu / pauza** během hry
+  - [x] rozhlížení otáčí **hlavu** v kabině, ne celé auto (až 75°, pohled přes rameno)
+  - [x] tlačítko **Menu / pauza** během hry (Esc/P, automaticky při přepnutí okna)
   - [ ] audit chyb, plynulost (spojení geometrie, předkompilace shaderů, načítání na pozadí, automatické snížení kvality)
 - [ ] Fáze 2: realistický interiér (palubní deska, sloupky, boční zrcátka, ruce na volantu, páčka blinkru)
 - [ ] Fáze 3: grafika z CC0 modelů (auta, chodci, stromy, budovy, textury), post-processing

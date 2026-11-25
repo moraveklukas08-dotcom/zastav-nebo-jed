@@ -1,5 +1,5 @@
 /* ============================== cockpit, mirror, wipers ============================== */
-const cockpit = new THREE.Group(); camera.add(cockpit);
+const cockpit = new THREE.Group(); carRig.add(cockpit);
 const CK = {};
 const mirrorRT = new THREE.WebGLRenderTarget(384, 128);
 const mirrorCam = new THREE.PerspectiveCamera(40, 3, 0.3, 600); mirrorCam.rotation.order = 'YXZ';

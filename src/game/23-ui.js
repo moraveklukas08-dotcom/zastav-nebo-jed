@@ -18,7 +18,7 @@ const ui = {
   menu() {
     document.querySelectorAll('.mode').forEach(b => { const m = b.dataset.mode; b.setAttribute('aria-pressed', String(m === G.mode)); const best = +(lsGet(bestKey(m)) || 0); b.querySelector('.mbest').textContent = best ? (m === 'daily' ? 'Dnes: ' : 'Rekord: ') + best + ' b.' : ''; if (m === 'train') b.disabled = !weakCats().length; });
     if (G.mode === 'train' && !weakCats().length) { G.mode = 'classic'; ui.menu(); }
-    document.querySelectorAll('#qual button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.q === Q.name)));
+    document.querySelectorAll('#qual button, #qualPause button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.q === Q.name)));
   },
   statsScreen() {
     const st = loadStats(), rows = Object.entries(st).sort((a, b) => a[1].ok / a[1].n - b[1].ok / b[1].n), L = $('stList'); L.innerHTML = '';
@@ -43,8 +43,20 @@ function applyQuality(name) {
   resize(); ui.menu();
 }
 
+function pauseGame() {
+  if (!G.playing || G.paused) return;
+  G.paused = true; P.brakeHeld = false; $('pause').hidden = false; $('pauseMode').textContent = MODE_NAMES[G.mode] + ' · situace ' + (G.idx + 1);
+  ui.menu(); if (AU.ctx) AU.ctx.suspend();
+}
+function resumeGame() { if (!G.paused) return; G.paused = false; $('pause').hidden = true; last = performance.now(); if (AU.ctx) AU.ctx.resume(); }
+function quitToMenu() {
+  G.paused = false; G.playing = false; P.brakeHeld = false; if (AU.ctx) AU.ctx.resume();
+  for (const id of ['pause', 'hud', 'over', 'statsScreen']) $(id).hidden = true; $('toast').hidden = true; ui.decide(false); ui.replay(false);
+  $('menu').hidden = false; ui.menu(); loadAttract();
+}
 function inDecision() { return G.playing && S && (P.mode === 'decide' || P.mode === 'decideStand'); }
 function choose(c) {
+  if (G.paused) return;
   if (P.mode === 'replay') { finishReplay(); return; }
   if (!inDecision()) return;
   if (G.mode === 'free') { if (c === 'stop' || c === 'slow') c = S.cur.answer === 'slow' ? 'slow' : 'stop'; }
@@ -68,10 +80,17 @@ $('stTrain').addEventListener('click', () => startGame('train'));
 let resetArm = 0;
 $('stReset').addEventListener('click', () => { const b = $('stReset'); if (Date.now() - resetArm < 3000) { lsSet('zastav-stats', '{}'); ui.statsScreen(); b.textContent = 'Smazáno'; resetArm = 0; } else { resetArm = Date.now(); b.textContent = 'Opravdu smazat?'; setTimeout(() => { b.textContent = 'Smazat statistiky'; }, 3000); } });
 document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => { if (b.disabled) return; G.mode = b.dataset.mode; lsSet('zastav-mode', G.mode); ui.menu(); }));
-document.querySelectorAll('#qual button').forEach(b => b.addEventListener('click', () => applyQuality(b.dataset.q)));
+document.querySelectorAll('#qual button, #qualPause button').forEach(b => b.addEventListener('click', () => applyQuality(b.dataset.q)));
+$('pauseBtn').addEventListener('click', () => pauseGame());
+$('resumeBtn').addEventListener('click', () => resumeGame());
+$('restartBtn').addEventListener('click', () => { G.paused = false; $('pause').hidden = true; if (AU.ctx) AU.ctx.resume(); startGame(G.mode); });
+$('quitBtn').addEventListener('click', () => quitToMenu());
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
 $('mute').addEventListener('click', () => { AU.setMuted(!AU.muted); $('mute').textContent = AU.muted ? 'Zvuk: vyp.' : 'Zvuk: zap.'; });
 addEventListener('keydown', e => {
   const k = e.key;
+  if (k === 'Escape' || k === 'p' || k === 'P') { if (G.paused) resumeGame(); else pauseGame(); e.preventDefault(); return; }
+  if (G.paused) { if (k === 'Enter') { e.preventDefault(); resumeGame(); } return; }
   if (e.repeat && (k === ' ' || k === 'Enter')) { if (G.playing) e.preventDefault(); return; }
   if (P.mode === 'replay' && (k === 'Enter' || k === ' ')) { e.preventDefault(); finishReplay(); return; }
   if (k === ' ' || k === 's' || k === 'S' || k === 'ArrowDown' || k === '1') { if (G.playing) { e.preventDefault(); P.brakeHeld = true; pb.classList.add('on'); choose('stop'); } }
@@ -83,7 +102,7 @@ addEventListener('keydown', e => {
 addEventListener('keyup', e => { const k = e.key; if (k === 'a' || k === 'A' || k === 'ArrowLeft') keys.left = false; if (k === 'd' || k === 'D' || k === 'ArrowRight') keys.right = false; if (k === ' ' || k === 's' || k === 'S' || k === 'ArrowDown' || k === '1') relBrake(); });
 let drag = null;
 canvas.addEventListener('pointerdown', e => { drag = { x: e.clientX, y0: dragYaw }; canvas.setPointerCapture(e.pointerId); });
-canvas.addEventListener('pointermove', e => { if (!drag) return; dragYaw = THREE.MathUtils.clamp(drag.y0 + (e.clientX - drag.x) / innerWidth * 2.2, -0.9, 0.9); });
+canvas.addEventListener('pointermove', e => { if (!drag) return; dragYaw = THREE.MathUtils.clamp(drag.y0 + (e.clientX - drag.x) / innerWidth * 2.6, -1.3, 1.3); });
 const endDrag = () => { drag = null; dragYaw = 0; };
 canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
 
@@ -94,7 +113,7 @@ let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now; frameNo++;
   if (window.__noRender) { requestAnimationFrame(frame); return; }
-  update(dt); if (S) { updateCamera(dt); updateWeather(dt, S.time); }
+  if (!G.paused) { update(dt); if (S) { updateCamera(dt); updateWeather(dt, S.time); } }
   AU.engine(P.v, P.mode === 'cruise' && P.v < P.cruise ? 1 : 0.3);
   frameHud();
   renderer.shadowMap.needsUpdate = true;

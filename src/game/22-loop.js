@@ -75,33 +75,38 @@ let dragYaw = 0;
 function updateCamera(dt) {
   const r = S.route;
   if (P.mode === 'replay') {
+    carRig.position.set(0, 0, 0); carRig.rotation.set(0, 0, 0);
     const m = S.mistake, fx = m.dx, fz = m.dz, k = S.replay ? Math.min(1, (S.replay.t - S.replay.frames[0].t) / 3) : 0;
     camera.position.set(m.x - fx * 15 + fz * (6 - k * 6), 21 - k * 3, m.z - fz * 15 - fx * (6 - k * 6));
     camera.lookAt(m.x + fx * 4, 0, m.z + fz * 4);
     dome.position.copy(camera.position); hills.position.set(camera.position.x, 0, camera.position.z);
     sun.position.set(camera.position.x + 55, 60, camera.position.z + 38); sun.target.position.set(m.x, 0, m.z); sun.target.updateMatrixWorld();
+    camera.updateMatrixWorld(true); camera.getWorldPosition(CAMW); camera.getWorldQuaternion(CAMQ);
     return;
   }
   const p = r.at(P.s), a = r.at(Math.max(0, P.s - 0.5)), b = r.at(P.s + 3);
   let dx = b.x - a.x, dz = b.z - a.z; const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
   const heading = Math.atan2(-dx, -dz);
-  const yt = (keys.left ? 0.7 : 0) - (keys.right ? 0.7 : 0) + dragYaw;
+  const yt = THREE.MathUtils.clamp((keys.left ? 1.15 : 0) - (keys.right ? 1.15 : 0) + dragYaw, -1.3, 1.3);
   P.yaw += (yt - P.yaw) * Math.min(1, dt * 5);
   const ac = (P.v - P.lastV) / Math.max(dt, 1e-3); P.lastV = P.v; P.acc += (ac - P.acc) * Math.min(1, dt * 6);
   const pt = THREE.MathUtils.clamp(P.acc * 0.0045, -0.05, 0.02); P.pitch += (pt - P.pitch) * Math.min(1, dt * 5);
   let sx = 0, sy = 0; if (P.shake > 0) { sx = (Math.random() - 0.5) * 0.22 * P.shake; sy = (Math.random() - 0.5) * 0.18 * P.shake; P.shake = Math.max(0, P.shake - dt * 1.1); }
   const bob = Math.sin((S ? S.time : 0) * 9) * 0.004 * Math.min(1, P.v / 10);
   P.wx = p.x; P.wz = p.z;
-  camera.position.set(p.x + p.dz * 0.38 + sx, 1.24 + bob + sy, p.z - p.dx * 0.38);
-  camera.rotation.set(P.pitch - 0.015, heading + P.yaw, sx * 0.25);
+  carRig.position.set(p.x + p.dz * 0.38 + sx, 1.24 + bob + sy, p.z - p.dx * 0.38);
+  carRig.rotation.set(P.pitch, heading, sx * 0.25);
+  camera.position.set(-Math.sin(P.yaw) * 0.06, 0, -Math.abs(Math.sin(P.yaw)) * 0.05);
+  camera.rotation.set(-0.015 - Math.abs(P.yaw) * 0.03, P.yaw, 0);
+  camera.updateMatrixWorld(true); camera.getWorldPosition(CAMW); camera.getWorldQuaternion(CAMQ);
   const d1 = r.at(P.s + 1.5), d2 = r.at(P.s + 7); const turn = Math.atan2(d1.dx * d2.dz - d1.dz * d2.dx, d1.dx * d2.dx + d1.dz * d2.dz);
   P.steer += (THREE.MathUtils.clamp(-turn * 3.2, -2.4, 2.4) - P.steer) * Math.min(1, dt * 4); CK.wheel.rotation.z = P.steer;
   CK.speed.rotation.z = (135 - Math.min(200, P.v * 3.6) / 200 * 270) * DEG - Math.PI / 2;
   CK.rpm.rotation.z = (135 - Math.min(7000, AU.rpm || 850) / 7000 * 270) * DEG - Math.PI / 2;
   mirrorCam.position.set(p.x, 1.35, p.z); mirrorCam.rotation.set(-0.03, heading + Math.PI, 0);
-  if (WX.sunset) { sun.position.copy(camera.position).addScaledVector(SUN_DIR, 140); sun.target.position.set(camera.position.x + dx * 30, 0, camera.position.z + dz * 30); }
-  else { sun.position.set(camera.position.x + 55, 50, camera.position.z + 38); sun.target.position.set(camera.position.x + dx * 30, 0, camera.position.z + dz * 30); }
+  if (WX.sunset) { sun.position.copy(CAMW).addScaledVector(SUN_DIR, 140); sun.target.position.set(CAMW.x + dx * 30, 0, CAMW.z + dz * 30); }
+  else { sun.position.set(CAMW.x + 55, 50, CAMW.z + 38); sun.target.position.set(CAMW.x + dx * 30, 0, CAMW.z + dz * 30); }
   sun.target.updateMatrixWorld();
-  dome.position.copy(camera.position); hills.position.set(camera.position.x, 0, camera.position.z);
+  dome.position.copy(CAMW); hills.position.set(CAMW.x, 0, CAMW.z);
 }
 

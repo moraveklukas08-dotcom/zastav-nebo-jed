@@ -1,6 +1,6 @@
 /* ============================== game state ============================== */
 const P = { s: 0, v: 0, cruise: 0, mode: 'idle', stopT: 0, target: 0, decel: 0, yaw: 0, shake: 0, pitch: 0, lastV: 0, acc: 0, crashT: 0, wx: 1.75, wz: 0, steer: 0, brakeHeld: false };
-const G = { list: [], idx: 0, score: 0, lives: 3, streak: 0, log: [], T: 3.0, playing: false, mode: lsGet('zastav-mode') || 'classic', seed: 0 };
+const G = { paused: false, list: [], idx: 0, score: 0, lives: 3, streak: 0, log: [], T: 3.0, playing: false, mode: lsGet('zastav-mode') || 'classic', seed: 0 };
 const MODE_NAMES = { classic: 'Klasika', endless: 'Nekonečná jízda', daily: 'Denní výzva', free: 'Volná jízda', train: 'Trénink slabin' };
 let S = null, replayCar = null, frameNo = 0;
 function todayKey() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }

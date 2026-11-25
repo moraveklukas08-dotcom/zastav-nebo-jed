@@ -21,11 +21,12 @@
         <div class="chip"><div class="limit" id="limitSign">50</div><div style="min-width:0"><div id="placeName">–</div><div id="placeEnv">–</div></div></div>
         <div id="nav" hidden><div id="navArrow">←</div><div id="navText">Odbočíš vlevo</div></div>
       </div>
+      <div class="rcol"><button type="button" id="pauseBtn" aria-label="Pauza a menu" title="Pauza (Esc)"><i></i><i></i></button>
       <div class="chip stats">
         <div class="stat"><span class="lab" id="modeLab">Body</span><b id="score">0</b></div>
         <div class="stat"><span class="lab">Situace</span><b id="prog">1/12</b></div>
         <div><div id="lives">♥♥♥</div><div id="streak"></div></div>
-      </div>
+      </div></div>
     </div>
     <div id="toast" hidden><div id="tHead"><div id="tBadge">✓</div><div id="tTitle"></div><div id="tPts"></div></div><p id="tText"></p></div>
     <div id="banner" hidden><div id="bnNum"></div><div id="bnTitle"></div><div id="bnPlace"></div></div>
@@ -71,6 +72,21 @@
       <div class="qual" id="qual"><span>Grafika</span><button type="button" data-q="low">Nízká</button><button type="button" data-q="medium">Střední</button><button type="button" data-q="high">Vysoká</button></div>
       <div class="keys"><kbd>Mezerník</kbd> <kbd>S</kbd> stop &nbsp;·&nbsp; <kbd>E</kbd> <kbd>Shift</kbd> zpomal &nbsp;·&nbsp; <kbd>Enter</kbd> <kbd>W</kbd> jeď &nbsp;·&nbsp; <kbd>A</kbd> <kbd>D</kbd> nebo tažení obrazem: rozhlédnout se</div>
       <div class="fine">Hra situace zjednodušuje. Závazná pravidla najdeš v zákoně č. 361/2000 Sb. o provozu na pozemních komunikacích.</div>
+    </div>
+  </div>
+
+  <div id="pause" class="screen" hidden>
+    <div class="card">
+      <div class="eyebrow" id="pauseMode">Pauza</div>
+      <h1 style="font-size:clamp(46px,9vw,84px)">Pauza</h1>
+      <p class="lead">Hra stojí. Odpočet i provoz čekají, dokud nebudeš pokračovat.</p>
+      <div class="row">
+        <button type="button" class="cta" id="resumeBtn">Pokračovat</button>
+        <button type="button" class="ghost" id="restartBtn">Začít znovu</button>
+        <button type="button" class="ghost" id="quitBtn">Do menu</button>
+      </div>
+      <div class="qual" id="qualPause"><span>Grafika</span><button type="button" data-q="low">Nízká</button><button type="button" data-q="medium">Střední</button><button type="button" data-q="high">Vysoká</button></div>
+      <div class="keys"><kbd>Esc</kbd> nebo <kbd>P</kbd> pauza a pokračování</div>
     </div>
   </div>
 
