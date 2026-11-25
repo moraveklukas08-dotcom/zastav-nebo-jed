@@ -130,7 +130,7 @@ function scPolice(T) {
   const G = sc.group;
   buildRural(sc, { len: O + 400 });
   const pc = makePoliceCar(); pc.position.set(5.2, 0, Z(O + 9)); G.add(pc);
-  const off = makeOfficer(); off.position.set(3.9, 0, Z(O)); off.rotation.y = Math.PI - 0.35; G.add(off);
+  const off = makeOfficer(); off.userData.dynamic = true; off.position.set(3.9, 0, Z(O)); off.rotation.y = Math.PI - 0.35; G.add(off);
   const [la, ra] = off.userData.arms;
   const ph = { type: 'moving', triggerS: trig, stopS };
   if (weighted({ stop: 0.55, wave: 0.45 }) === 'stop') {
@@ -275,7 +275,7 @@ function scOfficer(T) {
   line(G, 1.75, X - 5, 3.3, 0.45);
   const mk = (x, s, r) => { const t = makeTrafficLight(); t.position.set(x, 0, Z(s)); t.rotation.y = r; G.add(t); return t; };
   const L1 = mk(4.2, X - 5.6, 0), C1 = mk(5.6, X + 4.4, Math.PI / 2);
-  const off = makeOfficer(); off.position.set(-0.3, 0, Z(X)); G.add(off);
+  const off = makeOfficer(); off.userData.dynamic = true; off.position.set(-0.3, 0, Z(X)); G.add(off);
   B(G, 0.9, 0.12, 0.9, mat('podium', { color: 0xf2f2f2 }), -0.3, 0.06, Z(X), false);
   const [la, ra] = off.userData.arms;
   const tT = trig / v, zF = Z(X + 1.75), RP = [[150, zF], [-220, zF]];

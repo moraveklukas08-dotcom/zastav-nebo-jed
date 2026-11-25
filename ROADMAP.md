@@ -13,7 +13,9 @@ provozu a rychlé rozhodování na křižovatkách** (ne na reflexy typu srnka).
 - [ ] Fáze 1: opravy
   - [x] rozhlížení otáčí **hlavu** v kabině, ne celé auto (až 75°, pohled přes rameno)
   - [x] tlačítko **Menu / pauza** během hry (Esc/P, automaticky při přepnutí okna)
-  - [ ] audit chyb, plynulost (spojení geometrie, předkompilace shaderů, načítání na pozadí, automatické snížení kvality)
+  - [x] plynulost: spojení statické geometrie (město ~1200 → ~420 vykreslení), sloučení dílů aut, předkompilace shaderů při přechodu, automatické snížení kvality
+  - [x] testovací háček `window.__zastav` jen ve vývoji nebo s `?test`
+  - [ ] další audit chyb podle hraní
 - [ ] Fáze 2: realistický interiér (palubní deska, sloupky, boční zrcátka, ruce na volantu, páčka blinkru)
 - [ ] Fáze 3: grafika z CC0 modelů (auta, chodci, stromy, budovy, textury), post-processing
 - [ ] Fáze 4: situace 2.0 – každá situace 4–6 vývojů, značky a **dodatkové tabulky**, nové křižovatkové situace, odkazy na paragrafy

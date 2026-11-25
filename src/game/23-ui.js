@@ -110,8 +110,17 @@ function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h
 addEventListener('resize', resize); resize();
 
 let last = performance.now();
+const PERF = { t: 0, n: 0, slow: 0, done: false };
+function perfWatch(rawDt) {
+  if (PERF.done || !G.playing || G.paused || window.__noRender) return;
+  PERF.t += rawDt; PERF.n++;
+  if (PERF.t < 3) return;
+  const fps = PERF.n / PERF.t; PERF.t = 0; PERF.n = 0;
+  if (fps < 28 && Q.name !== 'low') { PERF.slow++; if (PERF.slow >= 2) { applyQuality(Q.name === 'high' ? 'medium' : 'low'); ui.toast('Plynulost', 'Hra běžela trhaně, tak jsem snížil kvalitu grafiky. Změnit ji můžeš v pauze.', 'warn'); PERF.slow = 0; if (Q.name === 'low') PERF.done = true; } }
+  else PERF.slow = 0;
+}
 function frame(now) {
-  const dt = Math.min(0.05, (now - last) / 1000); last = now; frameNo++;
+  const rawDt = (now - last) / 1000, dt = Math.min(0.05, rawDt); last = now; frameNo++; perfWatch(Math.min(rawDt, 1));
   if (window.__noRender) { requestAnimationFrame(frame); return; }
   if (!G.paused) { update(dt); if (S) { updateCamera(dt); updateWeather(dt, S.time); } }
   AU.engine(P.v, P.mode === 'cruise' && P.v < P.cruise ? 1 : 0.3);
@@ -128,4 +137,4 @@ function frame(now) {
   loadAttract();
   requestAnimationFrame(t => { last = t; ui.fade(false); frame(t); });
 })();
-window.__zastav = { THREE, renderer, G, P, get S() { return S; }, SCENARIOS, CATS, choose, startGame, resolve, step: dt => { update(dt); if (S) { updateCamera(dt); updateWeather(dt, S.time); } }, loadSceneFn: fn => { G.list = [fn]; G.idx = 0; G.playing = true; $('menu').hidden = true; $('hud').hidden = false; loadScene(0); } };
+if (import.meta.env.DEV || /[?&]test\b/.test(location.search)) window.__zastav = { THREE, renderer, G, P, get S() { return S; }, SCENARIOS, CATS, choose, startGame, resolve, step: dt => { update(dt); if (S) { updateCamera(dt); updateWeather(dt, S.time); } }, loadSceneFn: fn => { G.list = [fn]; G.idx = 0; G.playing = true; $('menu').hidden = true; $('hud').hidden = false; loadScene(0); } };

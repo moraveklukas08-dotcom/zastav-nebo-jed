@@ -21,7 +21,7 @@ function serve(dir) {
   p.on('pageerror', e => errs.push('PAGEERR ' + e.message + ' ' + (e.stack||'').slice(0,300)));
   p.on('console', m => { if (m.type() === 'error' && !m.text().includes('ERR_FAILED')) errs.push('console: ' + m.text()); });
   await p.route('**/*', r => r.request().url().startsWith(srv.url) ? r.continue() : r.abort());
-  await p.addInitScript(() => { try { localStorage.setItem('zastav-q', 'low'); } catch (e) {} }); for (let k = 0; k < 3; k++) { try { await p.goto(srv.url + '/index.html', { timeout: 90000 }); break; } catch (e) { console.log('RETRY goto'); } } await p.waitForFunction(() => window.__zastav && window.__zastav.S, null, { timeout: 90000 }); await p.waitForTimeout(500); await p.evaluate(() => { window.__noRender = true; });
+  await p.addInitScript(() => { try { localStorage.setItem('zastav-q', 'low'); } catch (e) {} }); for (let k = 0; k < 3; k++) { try { await p.goto(srv.url + '/index.html?test', { timeout: 90000 }); break; } catch (e) { console.log('RETRY goto'); } } await p.waitForFunction(() => window.__zastav && window.__zastav.S, null, { timeout: 90000 }); await p.waitForTimeout(500); await p.evaluate(() => { window.__noRender = true; });
   const REPS = +(process.env.REPS || 5);
   const NS = await p.evaluate(() => window.__zastav.SCENARIOS.length); const ONLYL = process.env.ONLY ? process.env.ONLY.split(',').map(Number) : [...Array(NS).keys()];
   for (const SI of ONLYL) {

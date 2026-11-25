@@ -32,10 +32,11 @@ function loadScene(i) {
   clearScene();
   vrng = G.mode === 'daily' ? mulberry32(G.seed + i * 7919) : Math.random;
   const sc = G.list[i](G.T); vrng = Math.random;
-  install(sc); ui.banner(sc, i); ui.stats();
+  mergeStatic(sc); install(sc); warmUp(); ui.banner(sc, i); ui.stats();
 }
-function loadAttract() { clearScene(); const sc = pick([scRight, scChild, scRound, scLeft, scTram, scLight, scSnow, scRain])(3); sc.attract = true; install(sc); P.cruise = Math.min(sc.v, 9); P.v = P.cruise; }
+function loadAttract() { clearScene(); const sc = pick([scRight, scChild, scRound, scLeft, scTram, scLight, scSnow, scRain])(3); sc.attract = true; mergeStatic(sc); install(sc); warmUp(); P.cruise = Math.min(sc.v, 9); P.v = P.cruise; }
 
+function warmUp() { try { updateCamera(0); renderer.compile(scene, camera); } catch (e) {} }
 function startDecision(ph) {
   S.cur = ph; ph.started = true; ph.t0 = S.time; if (ph.onStart) ph.onStart();
   P.mode = ph.type === 'moving' ? 'decide' : 'decideStand';

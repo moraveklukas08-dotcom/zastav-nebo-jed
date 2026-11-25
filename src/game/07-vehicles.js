@@ -66,6 +66,7 @@ function makeCar(color, type) {
   const pm = plateMat((Math.random() * 10) | 0);
   for (const [z, ry] of [[-T.L / 2 - 0.045, Math.PI], [T.L / 2 + 0.045, 0]]) { const pl = new THREE.Mesh(vPlane, pm); pl.scale.set(0.52, 0.115, 1); pl.position.set(0, 0.5, z); pl.rotation.y = ry; g.add(pl); }
   for (const sx of [-1, 1]) RB(g, 0.16, 0.11, 0.13, 0.035, paint, sx * (W / 2 + 0.06), T.glass[0][1] + 0.08, T.glass[0][0] + 0.38, false);
+  mergeLocal(g);
   return g;
 }
 function makeVan(color, amb) {
@@ -85,6 +86,7 @@ function makeVan(color, amb) {
     const prev = g.userData.tick;
     g.userData.tick = t => { const p = Math.floor(t * 7) % 2; bl1.emissiveIntensity = p ? 6 : 0; bl2.emissiveIntensity = p ? 0 : 6; if (prev) prev(t); };
   }
+  mergeLocal(g);
   return g;
 }
 function makeBus() {
@@ -101,6 +103,7 @@ function makeBus() {
   g.userData.openDoors = () => doors.forEach(d => { d.position.x = W / 2 + 0.25; d.scale.z = 0.5; });
   wheelSet(g, W + 0.02, [-3.8, 3.6], 0.5, 0.3);
   lampSet(g, W, L, 0.75, 0.88, -L / 2 - 0.04, L / 2 + 0.04);
+  mergeLocal(g);
   return g;
 }
 function makeTram() {
@@ -117,6 +120,7 @@ function makeTram() {
   B(g, 0.06, 1.1, 0.06, M.dark, 0, 3.85, 8, false).rotation.x = 0.5;
   B(g, 1.2, 0.05, 0.1, M.dark, 0, 4.35, 7.7, false);
   for (const sx of [-1, 1]) B(g, 0.28, 0.18, 0.05, M.head, sx * 0.8, 0.9, 0.02, false);
+  mergeLocal(g);
   return g;
 }
 function makeTrain() {
@@ -132,6 +136,7 @@ function makeTrain() {
   RB(g, 3.0, 1.6, 0.9, 0.2, yel, 0, 1.4, 0.45);
   B(g, 2.7, 1.0, 0.05, M.glass, 0, 2.8, -0.03, false);
   for (const sx of [-1, 1]) B(g, 0.32, 0.22, 0.05, M.head, sx * 1.0, 1.25, -0.03, false);
+  mergeLocal(g);
   return g;
 }
 function makeTractor() {
