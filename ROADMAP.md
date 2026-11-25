@@ -16,7 +16,8 @@ provozu a rychlé rozhodování na křižovatkách** (ne na reflexy typu srnka).
   - [x] plynulost: spojení statické geometrie (město ~1200 → ~420 vykreslení), sloučení dílů aut, předkompilace shaderů při přechodu, automatické snížení kvality
   - [x] testovací háček `window.__zastav` jen ve vývoji nebo s `?test`
   - [ ] další audit chyb podle hraní
-- [ ] Fáze 2: realistický interiér (palubní deska, sloupky, boční zrcátka, ruce na volantu, páčka blinkru)
+- [x] Fáze 2 (1. část): interiér – sloupky, strop a clony, dveře s klikou a opěrkou, boční skla, boční zrcátka s obrazem, ruce na volantu, páčka blinkru, displej s navigací, řadicí páka
+- [ ] Fáze 2 (2. část): jemnější tvary palubní desky a dveří (modely CC0), ruce s prsty, odlesk čelního skla
 - [ ] Fáze 3: grafika z CC0 modelů (auta, chodci, stromy, budovy, textury), post-processing
 - [ ] Fáze 4: situace 2.0 – každá situace 4–6 vývojů, značky a **dodatkové tabulky**, nové křižovatkové situace, odkazy na paragrafy
 - [ ] Hlasová navigace („za 50 metrů odbočte vpravo“) přes Web Speech API (zdarma, čeština)

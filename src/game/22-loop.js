@@ -66,6 +66,8 @@ function update(dt) {
   const bl = blinkOn && Math.floor(t * 2.7) % 2 === 0;
   if (blinkOn && bl !== S.blState) { S.blState = bl; if (G.playing) AU.blinker(bl); }
   const dir = S.nav ? (S.nav.arrow === '→' ? 'R' : 'L') : null;
+  if (CK.stalk) CK.stalk.rotation.z = CK.stalk.userData.rest + (blinkOn ? (dir === 'L' ? -0.18 : 0.18) : 0);
+  if (frameNo % 15 === 0) updateScreen();
   CK.indL.material.color.setHex(bl && dir === 'L' ? 0x2cff4a : 0x163a1a); CK.indR.material.color.setHex(bl && dir === 'R' ? 0x2cff4a : 0x163a1a);
   $('nav').classList.toggle('blink', !!blinkOn);
   AU.ambTick(dt);
