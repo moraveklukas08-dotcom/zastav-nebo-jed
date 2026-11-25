@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Zastav, nebo jeď!</title>
+<meta name="description" content="Reakční trenažér z místa řidiče: situace podle pravidel silničního provozu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+</head>
+<body>
+<div id="game">
+  <canvas id="c"></canvas>
+  <div id="glare"></div>
+  <div id="vig"></div>
+  <div id="flash"></div>
+  <div id="hud" hidden>
+    <div class="top">
+      <div class="lcol">
+        <div class="chip"><div class="limit" id="limitSign">50</div><div style="min-width:0"><div id="placeName">–</div><div id="placeEnv">–</div></div></div>
+        <div id="nav" hidden><div id="navArrow">←</div><div id="navText">Odbočíš vlevo</div></div>
+      </div>
+      <div class="chip stats">
+        <div class="stat"><span class="lab" id="modeLab">Body</span><b id="score">0</b></div>
+        <div class="stat"><span class="lab">Situace</span><b id="prog">1/12</b></div>
+        <div><div id="lives">♥♥♥</div><div id="streak"></div></div>
+      </div>
+    </div>
+    <div id="toast" hidden><div id="tHead"><div id="tBadge">✓</div><div id="tTitle"></div><div id="tPts"></div></div><p id="tText"></p></div>
+    <div id="banner" hidden><div id="bnNum"></div><div id="bnTitle"></div><div id="bnPlace"></div></div>
+    <div id="speedo"><b id="kmh">0</b><span>km/h</span></div>
+    <div id="decide" hidden>
+      <div id="q">Zastavit, nebo jet?</div>
+      <div class="timer"><div id="bar"></div></div>
+      <div class="btns">
+        <button type="button" id="bStop">Stop<small>mezerník · S · 1</small></button>
+        <button type="button" id="bSlow">Zpomal<small>E · Shift · 2</small></button>
+        <button type="button" id="bGo">Jeď<small>Enter · W · 3</small></button>
+      </div>
+    </div>
+    <div id="pedals" hidden>
+      <button type="button" id="pBrake">Brzda<small>drž mezerník · S</small></button>
+      <button type="button" id="pGas">Plyn<small>Enter · W</small></button>
+    </div>
+    <div id="replay" hidden>
+      <div class="rpHead"><span class="rpDot"></span>Záznam chyby · zpomaleně</div>
+      <p id="rpText"></p>
+      <div class="rpLegend"><span><i class="lg you"></i>tvoje auto</span><span><i class="lg haz"></i>účastník, kterého jsi ohrozil</span></div>
+      <button type="button" id="rpSkip">Pokračovat<small>Enter</small></button>
+    </div>
+    <button type="button" id="mute">Zvuk: zap.</button>
+  </div>
+
+  <div id="menu" class="screen">
+    <div class="card">
+      <div class="eyebrow">Reakční trenažér z místa řidiče</div>
+      <h1><span class="r">Zastav,</span><br>nebo <span class="g">jeď!</span></h1>
+      <p class="lead">Sedíš za volantem: město, vesnice, kruhový objezd, přejezd, les, dálnice, noc, déšť i sníh. Odbočuješ, objíždíš, sleduješ zrcátko. V každé situaci máš pár vteřin a pokaždé to dopadne jinak.</p>
+      <div class="modes" id="modes">
+        <button type="button" class="mode" data-mode="classic"><b>Klasika</b><span>12 situací z 29, tři životy</span><em class="mbest"></em></button>
+        <button type="button" class="mode" data-mode="endless"><b>Nekonečná jízda</b><span>dokud nedojdou životy, odpočet se zrychluje</span><em class="mbest"></em></button>
+        <button type="button" class="mode" data-mode="daily"><b>Denní výzva</b><span>dnes stejných 10 situací pro každého</span><em class="mbest"></em></button>
+        <button type="button" class="mode" data-mode="free"><b>Volná jízda</b><span>bez odpočtu a otázek, brzdíš sám</span><em class="mbest"></em></button>
+        <button type="button" class="mode" data-mode="train"><b>Trénink slabin</b><span>situace z oblastí, které ti nejdou</span><em class="mbest"></em></button>
+      </div>
+      <div class="row">
+        <button type="button" class="cta" id="start">Nastartovat</button>
+        <button type="button" class="ghost" id="openStats">Statistiky</button>
+      </div>
+      <div class="qual" id="qual"><span>Grafika</span><button type="button" data-q="low">Nízká</button><button type="button" data-q="medium">Střední</button><button type="button" data-q="high">Vysoká</button></div>
+      <div class="keys"><kbd>Mezerník</kbd> <kbd>S</kbd> stop &nbsp;·&nbsp; <kbd>E</kbd> <kbd>Shift</kbd> zpomal &nbsp;·&nbsp; <kbd>Enter</kbd> <kbd>W</kbd> jeď &nbsp;·&nbsp; <kbd>A</kbd> <kbd>D</kbd> nebo tažení obrazem: rozhlédnout se</div>
+      <div class="fine">Hra situace zjednodušuje. Závazná pravidla najdeš v zákoně č. 361/2000 Sb. o provozu na pozemních komunikacích.</div>
+    </div>
+  </div>
+
+  <div id="statsScreen" class="screen" hidden>
+    <div class="card">
+      <div class="eyebrow">Tvoje slabiny</div>
+      <h1 style="font-size:clamp(44px,8vw,76px)">Statistiky</h1>
+      <p class="lead" id="stSummary">Zatím žádná data. Odjeď pár situací a tady uvidíš, co ti jde a co ne.</p>
+      <ul id="stList" class="stlist"></ul>
+      <div class="row">
+        <button type="button" class="cta" id="stTrain">Trénovat slabiny</button>
+        <button type="button" class="ghost" id="stBack">Zpět</button>
+        <button type="button" class="ghost danger" id="stReset">Smazat statistiky</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="over" class="screen" hidden>
+    <div class="card">
+      <div class="eyebrow" id="ovEyebrow">Konec jízdy</div>
+      <h1 id="ovTitle" style="font-size:clamp(46px,9vw,84px)">Dobrý řidič</h1>
+      <div class="res">
+        <div><span>Body</span><b id="ovScore">0</b></div>
+        <div><span>Správně</span><b id="ovAcc">0/0</b></div>
+        <div><span>Průměrná reakce</span><b id="ovRt">–</b></div>
+      </div>
+      <p class="lead" id="ovWeak"></p>
+      <ul id="log"></ul>
+      <div class="row">
+        <button type="button" class="cta" id="again">Jet znovu</button>
+        <button type="button" class="ghost" id="toMenu">Menu</button>
+        <button type="button" class="ghost" id="ovTrain">Trénovat slabiny</button>
+      </div>
+    </div>
+  </div>
+  <div id="fade"></div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

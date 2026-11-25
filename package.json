@@ -1,0 +1,21 @@
+{
+  "name": "zastav-nebo-jed",
+  "private": true,
+  "version": "0.4.0",
+  "type": "module",
+  "description": "Zastav, nebo jeď! – 3D trenažér rozhodování řidiče podle pravidel silničního provozu",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:single": "vite build && node scripts/build-single.mjs",
+    "preview": "vite preview",
+    "test": "npm run build && node tests/sim.mjs",
+    "test:quick": "npm run build && REPS=2 node tests/sim.mjs"
+  },
+  "dependencies": {
+    "three": "0.160.0"
+  },
+  "devDependencies": {
+    "vite": "5.4.11"
+  }
+}
